@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+/* Prism theme */
+@import 'prismjs/themes/prism-tomorrow.css';
+
+@theme {
+  --font-mono: Monaco, Menlo, "Ubuntu Mono", Consolas, monospace;
+}
+
+/* Override Prism styles */
+pre[class*="language-"] {
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: #2d2d2d !important;
+  border-radius: 0 !important;
+}
+
+code[class*="language-"] {
+  font-family: var(--font-mono) !important;
+  font-size: 0.875rem !important;
+  line-height: 1.7 !important;
+}
+
+/* Force syntax colors */
+.token.comment { color: #75715e !important; }
+.token.string { color: #e6db74 !important; }
+.token.number { color: #ae81ff !important; }
+.token.keyword { color: #66d9ef !important; }
+.token.function { color: #a6e22e !important; }
+.token.operator { color: #f92672 !important; }
+.token.punctuation { color: #f8f8f2 !important; }

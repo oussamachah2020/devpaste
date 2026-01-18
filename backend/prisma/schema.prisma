@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model Paste {
+  id              String    @id @default(cuid())
+  title           String?
+  content         String    @db.Text
+  language        String    @default("plaintext")
+  expiresAt       DateTime?
+  burnAfterRead   Boolean   @default(false)
+  isPrivate       Boolean   @default(false)
+  views           Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([expiresAt])
+}
