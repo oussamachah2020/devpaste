@@ -1,9 +1,12 @@
 import { PastesService } from './pastes.service';
 import { CreatePasteDto } from './dto/create-paste.dto';
+import { VerifyPasswordDto } from './dto/verify-password.dto';
 export declare class PastesController {
     private readonly pastesService;
     constructor(pastesService: PastesService);
     create(createPasteDto: CreatePasteDto): Promise<{
+        password: undefined;
+        hasPassword: boolean;
         title: string | null;
         content: string;
         language: string;
@@ -23,8 +26,22 @@ export declare class PastesController {
         views: number;
         createdAt: Date;
     }[]>;
-    findOne(id: string): Promise<{}>;
-    delete(id: string): Promise<{
+    findOne(id: string): Promise<{
+        id: string;
+        title: string | null;
+        language: string;
+        expiresAt: Date | null;
+        burnAfterRead: boolean;
+        isPrivate: boolean;
+        views: number;
+        createdAt: Date;
+        updatedAt: Date;
+        hasPassword: boolean;
+        content: null;
+        password: undefined;
+    } | {
+        password: undefined;
+        hasPassword: boolean;
         title: string | null;
         content: string;
         language: string;
@@ -32,6 +49,47 @@ export declare class PastesController {
         isPrivate: boolean;
         id: string;
         expiresAt: Date | null;
+        views: number;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    findOneWithPassword(id: string, verifyPasswordDto: VerifyPasswordDto): Promise<{
+        id: string;
+        title: string | null;
+        language: string;
+        expiresAt: Date | null;
+        burnAfterRead: boolean;
+        isPrivate: boolean;
+        views: number;
+        createdAt: Date;
+        updatedAt: Date;
+        hasPassword: boolean;
+        content: null;
+        password: undefined;
+    } | {
+        password: undefined;
+        hasPassword: boolean;
+        title: string | null;
+        content: string;
+        language: string;
+        burnAfterRead: boolean;
+        isPrivate: boolean;
+        id: string;
+        expiresAt: Date | null;
+        views: number;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    delete(id: string): Promise<{
+        title: string | null;
+        content: string;
+        password: string | null;
+        language: string;
+        burnAfterRead: boolean;
+        isPrivate: boolean;
+        id: string;
+        expiresAt: Date | null;
+        hasPassword: boolean;
         views: number;
         createdAt: Date;
         updatedAt: Date;

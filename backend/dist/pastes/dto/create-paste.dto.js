@@ -14,6 +14,7 @@ const class_validator_1 = require("class-validator");
 class CreatePasteDto {
     title;
     content;
+    password;
     language;
     expiresIn;
     burnAfterRead;
@@ -32,7 +33,27 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsIn)(['plaintext', 'javascript', 'typescript', 'python', 'java', 'go', 'rust', 'cpp', 'html', 'css', 'json', 'sql', 'bash', 'markdown']),
+    __metadata("design:type", String)
+], CreatePasteDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)([
+        'plaintext',
+        'javascript',
+        'typescript',
+        'python',
+        'java',
+        'go',
+        'rust',
+        'cpp',
+        'html',
+        'css',
+        'json',
+        'sql',
+        'bash',
+        'markdown',
+    ]),
     __metadata("design:type", String)
 ], CreatePasteDto.prototype, "language", void 0);
 __decorate([

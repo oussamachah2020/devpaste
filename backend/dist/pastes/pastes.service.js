@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const cache_manager_1 = require("@nestjs/cache-manager");
 const nanoid_1 = require("nanoid");
+const bcrypt_1 = require("bcrypt");
 const nanoid = (0, nanoid_1.customAlphabet)('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 8);
 let PastesService = class PastesService {
     prisma;
@@ -27,6 +28,10 @@ let PastesService = class PastesService {
     }
     async create(createPasteDto) {
         const id = nanoid();
+        let hashedPassword = null;
+        if (createPasteDto.password) {
+            hashedPassword = await (0, bcrypt_1.hash)(createPasteDto.password, 10);
+        }
         let expiresAt = null;
         if (createPasteDto.expiresIn) {
             const now = new Date();
@@ -51,15 +56,17 @@ let PastesService = class PastesService {
                 expiresAt,
                 burnAfterRead: createPasteDto.burnAfterRead || false,
                 isPrivate: createPasteDto.isPrivate || false,
+                password: hashedPassword,
+                hasPassword: !!hashedPassword,
             },
         });
-        return paste;
+        return {
+            ...paste,
+            password: undefined,
+            hasPassword: !!hashedPassword,
+        };
     }
-    async findOne(id) {
-        const cached = await this.cacheManager.get(`paste:${id}`);
-        if (cached) {
-            return cached;
-        }
+    async findOne(id, password) {
         const paste = await this.prisma.paste.findUnique({
             where: { id },
         });
@@ -70,15 +77,43 @@ let PastesService = class PastesService {
             await this.prisma.paste.delete({ where: { id } });
             throw new common_1.NotFoundException('Paste has expired');
         }
+        if (paste.password && !password) {
+            return {
+                id: paste.id,
+                title: paste.title,
+                language: paste.language,
+                expiresAt: paste.expiresAt,
+                burnAfterRead: paste.burnAfterRead,
+                isPrivate: paste.isPrivate,
+                views: paste.views,
+                createdAt: paste.createdAt,
+                updatedAt: paste.updatedAt,
+                hasPassword: true,
+                content: null,
+                password: undefined,
+            };
+        }
+        if (paste.password && password) {
+            const isPasswordValid = await (0, bcrypt_1.compare)(password, paste.password);
+            if (!isPasswordValid) {
+                throw new common_1.UnauthorizedException('Incorrect password');
+            }
+        }
         await this.prisma.paste.update({
             where: { id },
             data: { views: { increment: 1 } },
         });
-        await this.cacheManager.set(`paste:${id}`, paste, 300000);
+        if (!paste.burnAfterRead) {
+            await this.cacheManager.set(`paste:${id}`, paste, 300000);
+        }
         if (paste.burnAfterRead) {
             await this.prisma.paste.delete({ where: { id } });
         }
-        return paste;
+        return {
+            ...paste,
+            password: undefined,
+            hasPassword: !!paste.password,
+        };
     }
     async findAll(limit = 20) {
         return this.prisma.paste.findMany({

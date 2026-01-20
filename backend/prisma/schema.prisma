@@ -10,10 +10,13 @@ datasource db {
 model Paste {
   id              String    @id @default(cuid())
   title           String?
+  password        String?
+
   content         String    @db.Text
   language        String    @default("plaintext")
   expiresAt       DateTime?
   burnAfterRead   Boolean   @default(false)
+  hasPassword     Boolean   @default(false)
   isPrivate       Boolean   @default(false)
   views           Int       @default(0)
   createdAt       DateTime  @default(now())

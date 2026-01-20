@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const pastes_service_1 = require("./pastes.service");
 const create_paste_dto_1 = require("./dto/create-paste.dto");
 const swagger_1 = require("@nestjs/swagger");
+const verify_password_dto_1 = require("./dto/verify-password.dto");
 let PastesController = class PastesController {
     pastesService;
     constructor(pastesService) {
@@ -30,6 +31,9 @@ let PastesController = class PastesController {
     }
     findOne(id) {
         return this.pastesService.findOne(id);
+    }
+    async findOneWithPassword(id, verifyPasswordDto) {
+        return this.pastesService.findOne(id, verifyPasswordDto.password);
     }
     delete(id) {
         return this.pastesService.delete(id);
@@ -60,6 +64,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PastesController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Unlock paste with password' }),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, verify_password_dto_1.VerifyPasswordDto]),
+    __metadata("design:returntype", Promise)
+], PastesController.prototype, "findOneWithPassword", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Delete a paste' }),

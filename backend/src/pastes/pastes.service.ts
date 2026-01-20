@@ -1,11 +1,20 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePasteDto } from './dto/create-paste.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { customAlphabet } from 'nanoid';
-
-const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 8);
+import { compare, hash } from 'bcrypt';
+const nanoid = customAlphabet(
+  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  8,
+);
 
 @Injectable()
 export class PastesService {
@@ -16,7 +25,13 @@ export class PastesService {
 
   async create(createPasteDto: CreatePasteDto) {
     const id = nanoid();
-    
+
+    let hashedPassword: string | null = null;
+
+    if (createPasteDto.password) {
+      hashedPassword = await hash(createPasteDto.password, 10);
+    }
+
     // Calculate expiration time
     let expiresAt: Date | null = null;
     if (createPasteDto.expiresIn) {
@@ -43,19 +58,20 @@ export class PastesService {
         expiresAt,
         burnAfterRead: createPasteDto.burnAfterRead || false,
         isPrivate: createPasteDto.isPrivate || false,
+        password: hashedPassword,
+        hasPassword: !!hashedPassword,
       },
     });
 
-    return paste;
+    // Return without password hash
+    return {
+      ...paste,
+      password: undefined,
+      hasPassword: !!hashedPassword,
+    };
   }
 
-  async findOne(id: string) {
-    // Try to get from cache first
-    const cached = await this.cacheManager.get(`paste:${id}`);
-    if (cached) {
-      return cached;
-    }
-
+  async findOne(id: string, password?: string) {
     const paste = await this.prisma.paste.findUnique({
       where: { id },
     });
@@ -70,21 +86,55 @@ export class PastesService {
       throw new NotFoundException('Paste has expired');
     }
 
+    // If paste has password but no password provided
+    if (paste.password && !password) {
+      // Return metadata only (without content)
+      return {
+        id: paste.id,
+        title: paste.title,
+        language: paste.language,
+        expiresAt: paste.expiresAt,
+        burnAfterRead: paste.burnAfterRead,
+        isPrivate: paste.isPrivate,
+        views: paste.views,
+        createdAt: paste.createdAt,
+        updatedAt: paste.updatedAt,
+        hasPassword: true,
+        content: null, // Don't return content
+        password: undefined,
+      };
+    }
+
+    // If paste has password and password is provided, verify it
+    if (paste.password && password) {
+      const isPasswordValid = await compare(password, paste.password);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Incorrect password');
+      }
+    }
+
     // Increment view count
     await this.prisma.paste.update({
       where: { id },
       data: { views: { increment: 1 } },
     });
 
-    // Cache for 5 minutes
-    await this.cacheManager.set(`paste:${id}`, paste, 300000);
+    // Cache for 5 minutes (only if not burn after read)
+    if (!paste.burnAfterRead) {
+      await this.cacheManager.set(`paste:${id}`, paste, 300000);
+    }
 
     // Handle burn after read
     if (paste.burnAfterRead) {
       await this.prisma.paste.delete({ where: { id } });
     }
 
-    return paste;
+    // Return full paste without password hash
+    return {
+      ...paste,
+      password: undefined,
+      hasPassword: !!paste.password,
+    };
   }
 
   async findAll(limit = 20) {

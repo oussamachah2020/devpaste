@@ -59,18 +59,18 @@ services:
       - devpaste-network
     command: sh -c "pnpm prisma migrate deploy && pnpm run start:dev"
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      target: production
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
-    networks:
-      - devpaste-network
-    restart: unless-stopped
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #     target: production
+  #   ports:
+  #     - "5173:80"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - devpaste-network
+  #   restart: unless-stopped
 
   # prometheus:
   #   image: prom/prometheus:latest
