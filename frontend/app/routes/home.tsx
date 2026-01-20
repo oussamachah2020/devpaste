@@ -37,6 +37,7 @@ import {
   KeyRound,
   Eye,
   EyeOff,
+  Wand2,
 } from "lucide-react";
 
 // Custom components
@@ -53,6 +54,7 @@ import "prismjs/components/prism-json";
 import "prismjs/components/prism-sql";
 import "prismjs/components/prism-bash";
 import "prismjs/components/prism-markdown";
+import { formatCode, isFormattable } from "@/lib/formatter";
 
 const LANGUAGES = [
   "plaintext",
@@ -78,6 +80,7 @@ export default function HomePage() {
   });
   const [isAutoDetecting, setIsAutoDetecting] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [isFormatting, setIsFormatting] = useState(false);
 
   const createMutation = useMutation({
     mutationFn: pasteApi.create,
@@ -118,7 +121,39 @@ export default function HomePage() {
     }
 
     createMutation.mutate(formData);
-  };;
+  };
+
+  const handleFormat = async () => {
+    if (!formData.content) {
+      toast.error("No code to format");
+      return;
+    }
+
+    const codeToFormat = String(formData.content).trim();
+
+    if (!codeToFormat) {
+      toast.error("No code to format");
+      return;
+    }
+
+    if (!isFormattable(formData.language)) {
+      toast.error(`Formatting not supported for ${formData.language}`);
+      return;
+    }
+
+    setIsFormatting(true);
+
+    try {
+      const formatted = await formatCode(codeToFormat, formData.language); // ✅ await
+      setFormData({ ...formData, content: formatted });
+      toast.success("Code formatted! ✨");
+    } catch (error: any) {
+      console.error("Format error:", error);
+      toast.error(error.message || "Failed to format code");
+    } finally {
+      setIsFormatting(false);
+    }
+  };
 
   const handleLanguageChange = (language: string) => {
     setFormData({ ...formData, language });
@@ -169,7 +204,7 @@ export default function HomePage() {
 
       {/* Main Form Card */}
       <Card className="border-2 shadow-xl">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
+        <CardHeader>
           <CardTitle>Create New Paste</CardTitle>
           <CardDescription>
             Share code snippets with syntax highlighting and optional privacy
@@ -260,6 +295,26 @@ export default function HomePage() {
             {/* Code Editor with Minimap */}
             <div className="space-y-2">
               <Label htmlFor="code">Your Code</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleFormat}
+                disabled={isFormatting || !isFormattable(formData.language)}
+                className="h-7"
+              >
+                {isFormatting ? (
+                  <>
+                    <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                    Formatting...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="w-3 h-3 mr-1" />
+                    Format Code
+                  </>
+                )}
+              </Button>
               <EditorWithMinimap
                 value={formData.content}
                 onValueChange={(code) =>
@@ -271,6 +326,12 @@ export default function HomePage() {
 console.log('Hello, DevPaste!');"
                 showMinimap={true}
               />
+              {isFormattable(formData.language) && formData.content && (
+                <p className="text-xs text-muted-foreground">
+                  💡 Tip: Click "Format Code" to automatically beautify your{" "}
+                  {formData.language} code
+                </p>
+              )}
             </div>
 
             {/* Options */}

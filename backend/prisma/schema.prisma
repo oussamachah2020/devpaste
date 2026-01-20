@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Paste {
-  id              String    @id @default(cuid())
+  id              String    @id @default(uuid())
   title           String?
   password        String?
 

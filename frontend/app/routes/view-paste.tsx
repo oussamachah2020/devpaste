@@ -19,6 +19,8 @@ import {
   Lock,
   KeyRound,
   Loader2,
+  Wand2,
+  ArrowLeftRight,
 } from "lucide-react";
 
 // Import Prism languages
@@ -32,6 +34,7 @@ import "prismjs/components/prism-json";
 import "prismjs/components/prism-sql";
 import "prismjs/components/prism-bash";
 import "prismjs/components/prism-markdown";
+import { formatCode, isFormattable } from "@/lib/formatter";
 
 export default function ViewPastePage() {
   const { id } = useParams();
@@ -40,6 +43,8 @@ export default function ViewPastePage() {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [passwordError, setPasswordError] = useState<string | undefined>();
   const [isVerifyingPassword, setIsVerifyingPassword] = useState(false);
+  const [formattedContent, setFormattedContent] = useState<string | null>(null);
+  const [isFormatting, setIsFormatting] = useState(false);
 
   const {
     data: existingPaste, // ✅ CHANGED: Directly use paste, not existingPaste?.data
@@ -87,6 +92,27 @@ export default function ViewPastePage() {
       } else {
         setPasswordError("An error occurred. Please try again.");
       }
+    }
+  };
+
+  const handleFormat = () => {
+    if (!paste?.content) return;
+
+    if (!isFormattable(paste.language)) {
+      toast.error(`Formatting not supported for ${paste.language}`);
+      return;
+    }
+
+    setIsFormatting(true);
+
+    try {
+      const formatted = formatCode(paste.content, paste.language);
+      setFormattedContent(formatted);
+      toast.success("Code formatted! ✨");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to format code");
+    } finally {
+      setIsFormatting(false);
     }
   };
 
@@ -291,14 +317,25 @@ export default function ViewPastePage() {
                 Download
               </Button>
 
-              <Button size="sm" variant="outline" asChild>
-                <a
-                  href={`/raw/${id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              {isFormattable(paste.language) && (
+                <Button
+                  onClick={handleFormat}
+                  size="sm"
+                  variant="outline"
+                  disabled={isFormatting}
                 >
-                  <Code2 className="w-4 h-4 mr-2" />
-                  Raw
+                  {isFormatting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Wand2 className="w-4 h-4 mr-2" />
+                  )}
+                  Format
+                </Button>
+              )}
+              <Button size="sm" variant="outline" asChild>
+                <a href={`/compare?left=${id}`}>
+                  <ArrowLeftRight className="w-4 h-4 mr-2" />
+                  Compare
                 </a>
               </Button>
             </div>
@@ -308,7 +345,7 @@ export default function ViewPastePage() {
 
       {/* Code Editor with Minimap */}
       <EditorWithMinimap
-        value={paste.content || ""}
+        value={formattedContent || paste.content || ""}
         onValueChange={() => {}}
         highlight={highlightCode}
         language={paste.language}

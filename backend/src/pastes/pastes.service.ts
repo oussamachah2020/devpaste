@@ -51,7 +51,6 @@ export class PastesService {
 
     const paste = await this.prisma.paste.create({
       data: {
-        id,
         title: createPasteDto.title,
         content: createPasteDto.content,
         language: createPasteDto.language || 'plaintext',
