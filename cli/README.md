@@ -29,24 +29,6 @@ npm install devpaste-cli
 ## 🔧 Configuration
 
 Set your DevPaste instance URL using environment variables:
-
-```bash
-export DEVPASTE_API_URL="https://api.devpaste.com"
-export DEVPASTE_FRONT_URL="https://devpaste.com"
-```
-
-Or use them inline:
-
-```bash
-DEVPASTE_API_URL=https://api.devpaste.com devpaste file.js
-```
-
-**Default values:**
-- API URL: `http://localhost:4000`
-- Front URL: `http://localhost:5173`
-
-## 🚀 Usage
-
 ### Creating Pastes
 
 #### Upload a file
