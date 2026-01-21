@@ -64,8 +64,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: production
-    ports:
-      - "5173:80"
+    expose:
+      - "3000"
     depends_on:
       - backend
     networks:
