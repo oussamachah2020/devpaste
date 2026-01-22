@@ -65,7 +65,7 @@ services:
       dockerfile: Dockerfile
       target: production
     expose:
-      - "3000:80"
+      - "80"
     depends_on:
       - backend
     networks:
