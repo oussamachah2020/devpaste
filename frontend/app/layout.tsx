@@ -1,6 +1,7 @@
-import { Outlet } from 'react-router'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster } from 'react-hot-toast'
+import { Outlet } from "react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
+import Logo from "@/public/logo.svg";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -9,7 +10,7 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
-})
+});
 
 export default function Layout() {
   return (
@@ -20,25 +21,13 @@ export default function Layout() {
           <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16 items-center">
               <a href="/" className="flex items-center gap-2 font-bold text-xl">
-                <svg
-                  className="w-6 h-6 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                  />
-                </svg>
+                <img src={Logo} alt="logo" className="w-6 h-6" />
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   DevPaste
                 </span>
               </a>
 
-              <div className="flex items-center gap-4">
+              {/* <div className="flex items-center gap-4">
                 <a
                   href="/recent"
                   className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 hover:text-gray-900"
@@ -58,7 +47,7 @@ export default function Layout() {
                   </svg>
                   Recent
                 </a>
-              </div>
+              </div> */}
             </div>
           </div>
         </nav>
