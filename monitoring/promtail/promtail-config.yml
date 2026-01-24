@@ -1,0 +1,40 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: devpaste-app
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: devpaste
+          service: backend
+          log_type: app
+          __path__: /logs/app-*.log
+
+  - job_name: devpaste-errors
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: devpaste
+          service: backend
+          log_type: error
+          __path__: /logs/error-*.log
+
+  - job_name: devpaste-info
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: devpaste
+          service: backend
+          log_type: info
+          __path__: /logs/info-*.log

@@ -16,6 +16,8 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const prisma_module_1 = require("./prisma/prisma.module");
 const pastes_module_1 = require("./pastes/pastes.module");
+const metrics_module_1 = require("./metrics/metrics.module");
+const logger_module_1 = require("./logger/logger.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -36,12 +38,16 @@ exports.AppModule = AppModule = __decorate([
                     }),
                 }),
             }),
-            throttler_1.ThrottlerModule.forRoot([{
+            throttler_1.ThrottlerModule.forRoot([
+                {
                     ttl: 60000,
                     limit: 10,
-                }]),
+                },
+            ]),
             prisma_module_1.PrismaModule,
             pastes_module_1.PastesModule,
+            metrics_module_1.MetricsModule,
+            logger_module_1.LoggerModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

@@ -26,60 +26,8 @@ export declare class PastesController {
         views: number;
         createdAt: Date;
     }[]>;
-    findOne(id: string): Promise<{
-        id: string;
-        title: string | null;
-        language: string;
-        expiresAt: Date | null;
-        burnAfterRead: boolean;
-        isPrivate: boolean;
-        views: number;
-        createdAt: Date;
-        updatedAt: Date;
-        hasPassword: boolean;
-        content: null;
-        password: undefined;
-    } | {
-        password: undefined;
-        hasPassword: boolean;
-        title: string | null;
-        content: string;
-        language: string;
-        burnAfterRead: boolean;
-        isPrivate: boolean;
-        id: string;
-        expiresAt: Date | null;
-        views: number;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
-    findOneWithPassword(id: string, verifyPasswordDto: VerifyPasswordDto): Promise<{
-        id: string;
-        title: string | null;
-        language: string;
-        expiresAt: Date | null;
-        burnAfterRead: boolean;
-        isPrivate: boolean;
-        views: number;
-        createdAt: Date;
-        updatedAt: Date;
-        hasPassword: boolean;
-        content: null;
-        password: undefined;
-    } | {
-        password: undefined;
-        hasPassword: boolean;
-        title: string | null;
-        content: string;
-        language: string;
-        burnAfterRead: boolean;
-        isPrivate: boolean;
-        id: string;
-        expiresAt: Date | null;
-        views: number;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
+    findOne(id: string): Promise<any>;
+    findOneWithPassword(id: string, verifyPasswordDto: VerifyPasswordDto): Promise<any>;
     delete(id: string): Promise<{
         title: string | null;
         content: string;

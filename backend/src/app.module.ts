@@ -7,6 +7,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { PastesModule } from './pastes/pastes.module';
+import { MetricsModule } from './metrics/metrics.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -24,12 +26,16 @@ import { PastesModule } from './pastes/pastes.module';
         }),
       }),
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000, // 60 seconds
-      limit: 10,  // 10 requests per minute
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 60 seconds
+        limit: 10, // 10 requests per minute
+      },
+    ]),
     PrismaModule,
     PastesModule,
+    MetricsModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

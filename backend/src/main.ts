@@ -9,7 +9,12 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'https://reachmate.xyz',
+      'http://localhost:3000',
+    ],
     credentials: true, // only if you use cookies/auth with credentials
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

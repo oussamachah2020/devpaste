@@ -10,13 +10,16 @@ exports.PastesModule = void 0;
 const common_1 = require("@nestjs/common");
 const pastes_service_1 = require("./pastes.service");
 const pastes_controller_1 = require("./pastes.controller");
+const metrics_module_1 = require("../metrics/metrics.module");
+const prisma_module_1 = require("../prisma/prisma.module");
 let PastesModule = class PastesModule {
 };
 exports.PastesModule = PastesModule;
 exports.PastesModule = PastesModule = __decorate([
     (0, common_1.Module)({
+        imports: [prisma_module_1.PrismaModule, metrics_module_1.MetricsModule],
         providers: [pastes_service_1.PastesService],
-        controllers: [pastes_controller_1.PastesController]
+        controllers: [pastes_controller_1.PastesController],
     })
 ], PastesModule);
 //# sourceMappingURL=pastes.module.js.map

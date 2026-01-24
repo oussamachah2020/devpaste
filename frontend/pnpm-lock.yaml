@@ -89,6 +89,9 @@ importers:
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
+      web-vitals:
+        specifier: 3.5.0
+        version: 3.5.0
     devDependencies:
       '@react-router/dev':
         specifier: 7.12.0
@@ -2193,6 +2196,9 @@ packages:
       jsdom:
         optional: true
 
+  web-vitals@3.5.0:
+    resolution: {integrity: sha512-f5YnCHVG9Y6uLCePD4tY8bO/Ge15NPEQWtvm3tPzDKygloiqtb4SVqRHBcrIAqo2ztqX5XueqDn97zHF0LdT6w==}
+
   why-is-node-running@2.3.0:
     resolution: {integrity: sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w==}
     engines: {node: '>=8'}
@@ -4139,6 +4145,8 @@ snapshots:
       - terser
       - tsx
       - yaml
+
+  web-vitals@3.5.0: {}
 
   why-is-node-running@2.3.0:
     dependencies:
